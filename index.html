@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101217" />
+    <meta name="description" content="PLUTO — a private, capable AI workspace." />
+    <title>PLUTO — AI workspace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell" id="appShell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand-row">
+          <a class="brand" href="#" aria-label="PLUTO home" data-action="new-chat">
+            <span class="brand-mark"><span></span><span></span><span></span></span>
+            <span>PLUTO</span>
+          </a>
+          <button class="icon-btn sidebar-toggle" data-action="toggle-sidebar" aria-label="Collapse sidebar" title="Collapse sidebar"></button>
+        </div>
+
+        <button class="new-chat-btn" data-action="new-chat">
+          <span class="new-chat-plus">+</span>
+          <span>New conversation</span>
+          <kbd>⌘ K</kbd>
+        </button>
+
+        <div class="side-search">
+          <span class="search-icon" aria-hidden="true"></span>
+          <input id="chatSearch" type="search" placeholder="Search chats" aria-label="Search chats" />
+          <kbd>⌘ /</kbd>
+        </div>
+
+        <div class="side-section">
+          <div class="section-label"><span>Workspace</span></div>
+          <nav class="side-nav" aria-label="Workspace">
+            <button class="side-nav-item active" data-view="chat"><span class="nav-icon spark-icon"></span>Chat <span class="nav-count">⌘ 1</span></button>
+            <button class="side-nav-item" data-view="library"><span class="nav-icon library-icon"></span>Library</button>
+            <button class="side-nav-item" data-view="prompts"><span class="nav-icon prompt-icon"></span>Prompt lab</button>
+          </nav>
+        </div>
+
+        <div class="side-section conversations-section">
+          <div class="section-label"><span>Recent conversations</span><button class="tiny-add" data-action="new-chat" aria-label="New conversation">+</button></div>
+          <div class="conversation-list" id="conversationList"></div>
+          <button class="show-more" id="showMoreChats" hidden>Show more</button>
+        </div>
+
+        <div class="sidebar-bottom">
+          <div class="usage-card">
+            <div class="usage-card-top"><span class="status-dot"></span><span>Local workspace</span><button class="more-btn" data-action="open-settings" aria-label="Workspace settings">•••</button></div>
+            <div class="usage-bar"><span></span></div>
+            <div class="usage-meta"><span>Storage used</span><strong id="storageUsed">0.0 MB</strong></div>
+          </div>
+          <button class="profile-row" data-action="open-settings">
+            <span class="avatar avatar-you">Y</span>
+            <span class="profile-copy"><strong>Your workspace</strong><small>Personal · Private</small></span>
+            <span class="chevron">›</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="main-area">
+        <header class="topbar">
+          <button class="mobile-brand" data-action="toggle-sidebar" aria-label="Open navigation"><span class="brand-mark"><span></span><span></span><span></span></span><strong>PLUTO</strong></button>
+          <div class="topbar-context" id="topbarContext"><span class="context-dot"></span><span>Private workspace</span></div>
+          <div class="topbar-actions">
+            <button class="pill-btn" data-action="open-command" title="Open command palette"><span class="command-spark">✦</span><span class="desktop-only">Command palette</span><kbd>⌘ K</kbd></button>
+            <button class="icon-btn" data-action="toggle-theme" aria-label="Toggle theme" title="Toggle theme"></button>
+            <button class="avatar avatar-you small-avatar" data-action="open-settings" aria-label="Open settings">Y</button>
+          </div>
+        </header>
+
+        <section class="view active" id="chatView">
+          <div class="chat-layout">
+            <div class="chat-column">
+              <div class="welcome-block" id="welcomeBlock">
+                <div class="eyebrow"><span class="eyebrow-line"></span>THE INTELLIGENCE LAYER</div>
+                <h1>Think bigger.<br /><em>Make it real.</em></h1>
+                <p>PLUTO is your private AI workspace for thinking, creating, and getting things done.</p>
+              </div>
+
+              <div class="message-list" id="messageList" aria-live="polite"></div>
+
+              <div class="composer-wrap" id="composerWrap">
+                <div class="composer-shell" id="composerShell">
+                  <div class="attachment-strip" id="attachmentStrip" hidden></div>
+                  <textarea id="promptInput" rows="1" placeholder="Ask PLUTO anything..." aria-label="Message PLUTO"></textarea>
+                  <div class="composer-bottom">
+                    <div class="composer-tools">
+                      <button class="tool-btn" data-action="attach" title="Attach a file"><span class="plus-circle">+</span><span class="desktop-only">Attach</span></button>
+                      <button class="tool-btn" data-action="toggle-web" title="Toggle web access"><span class="globe-icon"></span><span>Web</span><span class="tool-status" id="webStatus">OFF</span></button>
+                      <button class="tool-btn" data-action="toggle-thinking" title="Toggle extended thinking"><span class="thinking-icon">◒</span><span>Think</span><span class="tool-status" id="thinkStatus">OFF</span></button>
+                    </div>
+                    <div class="composer-send-tools">
+                      <button class="icon-btn mic-btn" data-action="voice-input" aria-label="Voice input" title="Voice input"></button>
+                      <button class="send-btn" id="sendButton" data-action="send" aria-label="Send message" title="Send message"><span class="send-arrow">↑</span></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="composer-note"><span>PLUTO can make mistakes. Check important information.</span><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span></div>
+              </div>
+            </div>
+
+            <aside class="insight-rail" id="insightRail">
+              <div class="rail-label">QUICK START</div>
+              <button class="prompt-card" data-prompt="Turn a messy idea into a clear plan">
+                <span class="prompt-card-icon coral-icon">↗</span><span><strong>From idea to plan</strong><small>Turn a messy thought into clear next steps</small></span><span class="card-arrow">↗</span>
+              </button>
+              <button class="prompt-card" data-prompt="Help me understand this like I'm a curious beginner">
+                <span class="prompt-card-icon blue-icon">◎</span><span><strong>Explain anything</strong><small>Make complex ideas feel simple</small></span><span class="card-arrow">↗</span>
+              </button>
+              <button class="prompt-card" data-prompt="Write a bold first draft for my next big idea">
+                <span class="prompt-card-icon yellow-icon">✦</span><span><strong>Create with me</strong><small>Get past the blank page, faster</small></span><span class="card-arrow">↗</span>
+              </button>
+              <div class="rail-divider"></div>
+              <div class="rail-tip"><span class="tip-icon">⌘</span><div><strong>Build your own flow</strong><p>Use Prompt lab to save the workflows you repeat.</p><button data-view-target="prompts">Explore Prompt lab <span>→</span></button></div></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="libraryView">
+          <div class="page-view">
+            <div class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span>YOUR KNOWLEDGE</div><h2>Library</h2><p>Files and exports saved in this browser.</p></div><button class="primary-btn" data-action="attach"><span>+</span> Add a file</button></div>
+            <div class="library-grid" id="libraryGrid"></div>
+          </div>
+        </section>
+
+        <section class="view" id="promptsView">
+          <div class="page-view">
+            <div class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span>REUSABLE INTELLIGENCE</div><h2>Prompt lab</h2><p>Keep your best instructions close at hand.</p></div><button class="primary-btn" data-action="new-prompt"><span>+</span> New prompt</button></div>
+            <div class="prompt-lab-grid" id="promptLabGrid"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <input type="file" id="fileInput" multiple hidden accept=".txt,.md,.csv,.json,.js,.ts,.py,.html,.css,.pdf,image/*" />
+
+    <div class="modal-backdrop" id="settingsModal" hidden>
+      <section class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal-header"><div><span class="modal-kicker">CONTROL CENTER</span><h2 id="settingsTitle">Settings</h2></div><button class="close-btn" data-action="close-modal" aria-label="Close">×</button></div>
+        <div class="settings-tabs"><button class="settings-tab active" data-settings-tab="connection">Connection</button><button class="settings-tab" data-settings-tab="appearance">Appearance</button><button class="settings-tab" data-settings-tab="data">Data & privacy</button></div>
+        <div class="settings-panel active" data-settings-panel="connection">
+          <div class="setting-intro"><span class="setting-orb">✦</span><div><strong>Choose how PLUTO thinks</strong><p>Keys stay in this browser and are never sent anywhere except the provider you select.</p></div></div>
+          <label class="field-label" for="providerSelect">Provider</label>
+          <select class="field" id="providerSelect"><option value="demo">PLUTO Demo · no key needed</option><option value="openrouter">OpenRouter · free models</option><option value="huggingface">Hugging Face · inference API</option><option value="ollama">Ollama · local models</option><option value="custom">Custom OpenAI-compatible endpoint</option></select>
+          <p class="field-help" id="providerHelp">Instant local demo mode. Connect a provider for live model responses.</p>
+          <div id="endpointField" class="conditional-field" hidden><label class="field-label" for="endpointInput">Endpoint URL</label><input class="field" id="endpointInput" type="url" placeholder="https://your-endpoint.example/v1/chat/completions" /><p class="field-help">For a browser-safe, OpenAI-compatible endpoint. Use a server-side proxy in production.</p></div>
+          <div id="apiKeyField" class="conditional-field" hidden><label class="field-label" for="apiKeyInput">API key <span class="optional">optional</span></label><div class="secret-input"><input class="field" id="apiKeyInput" type="password" autocomplete="off" placeholder="Paste your key here" /><button data-action="toggle-secret" aria-label="Show API key">Show</button></div><p class="field-help">PLUTO will not invent or expose API keys. Use a free model or your own key.</p></div>
+          <label class="field-label" for="modelSelect">Model</label>
+          <select class="field" id="modelSelect"></select>
+          <div class="connection-note"><span class="connection-dot"></span><span id="connectionStatus">Running in no-key demo mode</span><button data-action="test-connection">Test</button></div>
+        </div>
+        <div class="settings-panel" data-settings-panel="appearance">
+          <div class="setting-row"><div><strong>Interface theme</strong><p>Choose the atmosphere for your workspace.</p></div><div class="segmented"><button data-theme-choice="dark">Dark</button><button data-theme-choice="light">Light</button><button data-theme-choice="system">System</button></div></div>
+          <div class="setting-row"><div><strong>Compact layout</strong><p>Fit more conversation on screen.</p></div><label class="switch"><input type="checkbox" id="compactToggle" /><span></span></label></div>
+          <div class="setting-row"><div><strong>Show starter rail</strong><p>Keep quick-start ideas beside new chats.</p></div><label class="switch"><input type="checkbox" id="railToggle" checked /><span></span></label></div>
+        </div>
+        <div class="settings-panel" data-settings-panel="data">
+          <div class="privacy-callout"><span>◈</span><div><strong>Private by default</strong><p>Your conversations, files, and preferences are stored locally in this browser. Demo mode never calls a remote service.</p></div></div>
+          <div class="data-actions"><button class="secondary-btn" data-action="export-all">Download all data</button><button class="danger-btn" data-action="clear-data">Clear local data</button></div>
+        </div>
+        <div class="modal-footer"><span id="saveHint">Changes save automatically</span><button class="primary-btn" data-action="close-modal">Done</button></div>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="commandModal" hidden>
+      <section class="modal command-modal" role="dialog" aria-modal="true" aria-label="Command palette">
+        <div class="command-search"><span class="search-icon"></span><input id="commandInput" type="search" placeholder="Search commands..." autocomplete="off" /><kbd>ESC</kbd></div>
+        <div class="command-list" id="commandList"></div>
+        <div class="command-footer"><span>PLUTO command palette</span><span><kbd>↵</kbd> select <kbd>esc</kbd> close</span></div>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+    <script src="app.js"></script>
+  </body>
+</html>

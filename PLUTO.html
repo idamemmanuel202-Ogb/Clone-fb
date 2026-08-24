@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101217" />
+    <meta name="description" content="PLUTO — a private, capable AI workspace." />
+    <title>PLUTO — AI workspace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+:root {
+  --bg: #0e1015;
+  --bg-soft: #12151c;
+  --panel: #171a22;
+  --panel-2: #1b1f28;
+  --panel-3: #20242e;
+  --text: #f5f7fb;
+  --muted: #8c93a3;
+  --muted-2: #656d7d;
+  --line: rgba(255,255,255,.08);
+  --line-strong: rgba(255,255,255,.14);
+  --coral: #ff795e;
+  --coral-soft: rgba(255,121,94,.14);
+  --blue: #8eaeff;
+  --yellow: #f0c96c;
+  --green: #88d7a7;
+  --sidebar-width: 286px;
+  --shadow: 0 24px 70px rgba(0,0,0,.26);
+  --radius: 15px;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f3f4f7;
+  --bg-soft: #fbfbfc;
+  --panel: #ffffff;
+  --panel-2: #f7f7f9;
+  --panel-3: #eceef3;
+  --text: #151822;
+  --muted: #6e7481;
+  --muted-2: #959ba8;
+  --line: rgba(16,20,31,.09);
+  --line-strong: rgba(16,20,31,.15);
+  --shadow: 0 20px 55px rgba(30,36,52,.12);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { background: var(--bg); color: var(--text); font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { border: 0; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+::selection { color: var(--text); background: rgba(255,121,94,.35); }
+
+.app-shell { display: flex; min-height: 100vh; overflow: hidden; }
+.sidebar { flex: 0 0 var(--sidebar-width); width: var(--sidebar-width); min-height: 100vh; border-right: 1px solid var(--line); background: var(--bg-soft); display: flex; flex-direction: column; padding: 23px 17px 16px; transition: width .25s ease, flex-basis .25s ease, padding .25s ease; z-index: 5; }
+.brand-row { display: flex; align-items: center; justify-content: space-between; padding: 0 7px 24px; }
+.brand, .mobile-brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 800; letter-spacing: .18em; font-size: 14px; }.mobile-brand { padding: 0; border: 0; background: transparent; }
+.brand-mark { width: 23px; height: 23px; display: inline-flex; align-items: flex-end; gap: 3px; padding: 4px; border: 1px solid rgba(255,255,255,.14); background: linear-gradient(140deg, #ff9975, #ff665f); border-radius: 7px; box-shadow: 0 4px 14px rgba(255,112,90,.2); }
+.brand-mark span { display: block; width: 3px; border-radius: 2px; background: #241a1c; }
+.brand-mark span:nth-child(1) { height: 7px; opacity: .65; }.brand-mark span:nth-child(2) { height: 11px; }.brand-mark span:nth-child(3) { height: 6px; opacity: .8; }
+.icon-btn { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 9px; background: transparent; color: var(--muted); transition: background .18s, color .18s; }
+.icon-btn:hover { color: var(--text); background: var(--panel-3); }
+.sidebar-toggle::before { content: '‹'; font-size: 23px; line-height: 1; font-family: Georgia, serif; }
+.new-chat-btn { display: flex; align-items: center; gap: 10px; width: 100%; height: 43px; padding: 0 12px; border-radius: 10px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); font-size: 13px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,.08); transition: border .18s, background .18s, transform .18s; }
+.new-chat-btn:hover { background: var(--panel-3); border-color: var(--line-strong); transform: translateY(-1px); }
+.new-chat-plus { font-size: 21px; line-height: 14px; font-weight: 400; color: var(--coral); }
+kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 19px; padding: 0 5px; border: 1px solid var(--line-strong); border-radius: 5px; color: var(--muted-2); background: var(--panel); font-family: 'DM Mono', monospace; font-size: 9px; white-space: nowrap; }
+.new-chat-btn kbd { margin-left: auto; }
+.side-search { height: 38px; display: flex; align-items: center; gap: 8px; margin: 13px 0 25px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; background: transparent; color: var(--muted-2); }
+.side-search:focus-within { border-color: var(--line-strong); background: var(--panel); }.side-search input { min-width: 0; flex: 1; background: transparent; border: 0; outline: 0; font-size: 12px; color: var(--text); }.side-search input::placeholder { color: var(--muted-2); }
+.search-icon { position: relative; display: inline-block; flex: 0 0 15px; width: 15px; height: 15px; border: 1.5px solid currentColor; border-radius: 50%; }.search-icon::after { content: ''; position: absolute; right: -4px; bottom: -2px; width: 6px; height: 1.5px; border-radius: 3px; background: currentColor; transform: rotate(45deg); }
+.side-section { margin-bottom: 25px; }.section-label { padding: 0 10px 9px; color: var(--muted-2); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; display: flex; align-items: center; justify-content: space-between; }.tiny-add { padding: 0; color: var(--muted-2); background: transparent; font-size: 16px; line-height: 10px; }.tiny-add:hover { color: var(--text); }
+.side-nav { display: grid; gap: 3px; }.side-nav-item { width: 100%; display: flex; gap: 10px; align-items: center; padding: 9px 10px; border-radius: 8px; color: var(--muted); text-align: left; background: transparent; font-size: 12px; transition: color .15s, background .15s; }.side-nav-item:hover { color: var(--text); background: var(--panel-2); }.side-nav-item.active { color: var(--text); background: var(--panel-2); box-shadow: inset 2px 0 var(--coral); }.nav-icon { width: 15px; height: 15px; opacity: .9; position: relative; display: inline-block; }.spark-icon::before { content: '✦'; font-size: 15px; color: var(--coral); }.library-icon { border: 1px solid currentColor; border-radius: 3px; }.library-icon::after { content: ''; position: absolute; left: 3px; right: 3px; top: 4px; height: 1px; background: currentColor; box-shadow: 0 3px currentColor; }.prompt-icon::before { content: '⌁'; font-size: 21px; position: absolute; top: -7px; }.nav-count { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted-2); }
+.conversations-section { min-height: 0; flex: 1; }.conversation-list { display: grid; gap: 2px; max-height: 310px; overflow: auto; }.conversation-list::-webkit-scrollbar { width: 3px; }.conversation-list::-webkit-scrollbar-thumb { background: var(--line-strong); }.conversation-item { width: 100%; padding: 9px 10px; display: flex; gap: 9px; align-items: center; color: var(--muted); text-align: left; border-radius: 8px; background: transparent; font-size: 11px; }.conversation-item:hover, .conversation-item.active { background: var(--panel-2); color: var(--text); }.conversation-item.active { color: var(--text); }.conversation-item .conversation-symbol { color: var(--muted-2); font-size: 12px; }.conversation-item.active .conversation-symbol { color: var(--coral); }.conversation-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.conversation-time { color: var(--muted-2); font-family: 'DM Mono', monospace; font-size: 9px; }.empty-side-state { padding: 12px 10px; color: var(--muted-2); font-size: 10px; }.show-more { margin: 10px 10px 0; color: var(--coral); background: transparent; font-size: 11px; }
+.sidebar-bottom { display: grid; gap: 12px; }.usage-card { padding: 12px; background: linear-gradient(145deg, var(--panel-2), transparent); border: 1px solid var(--line); border-radius: 11px; }.usage-card-top, .usage-meta { display: flex; align-items: center; }.usage-card-top { gap: 6px; color: var(--muted); font-size: 10px; }.status-dot, .context-dot, .connection-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; background: var(--green); box-shadow: 0 0 0 3px rgba(136,215,167,.11); }.more-btn { margin-left: auto; background: transparent; color: var(--muted-2); letter-spacing: 2px; }.usage-bar { height: 4px; margin: 14px 0 8px; border-radius: 10px; background: var(--panel-3); overflow: hidden; }.usage-bar span { display: block; width: 17%; height: 100%; border-radius: inherit; background: var(--coral); }.usage-meta { justify-content: space-between; color: var(--muted-2); font-size: 9px; }.usage-meta strong { color: var(--muted); font-weight: 600; }.profile-row { display: flex; align-items: center; gap: 9px; width: 100%; padding: 3px 6px; background: transparent; text-align: left; }.avatar { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex: 0 0 30px; border-radius: 9px; color: #fff; background: linear-gradient(140deg,#7d8fff,#ab79e9); font-size: 11px; font-weight: 800; }.small-avatar { width: 30px; height: 30px; flex-basis: 30px; border: 0; }.profile-copy { min-width: 0; flex: 1; display: grid; gap: 2px; }.profile-copy strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }.profile-copy small { color: var(--muted-2); font-size: 9px; }.chevron { color: var(--muted-2); font-size: 19px; }
+
+.main-area { min-width: 0; flex: 1; display: flex; flex-direction: column; background: var(--bg); }.topbar { height: 73px; flex: 0 0 73px; display: flex; align-items: center; justify-content: space-between; padding: 0 34px; border-bottom: 1px solid var(--line); }.topbar-context { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 11px; }.context-dot { width: 5px; height: 5px; }.topbar-actions { display: flex; align-items: center; gap: 10px; }.pill-btn { display: flex; align-items: center; gap: 8px; padding: 7px 8px 7px 10px; color: var(--muted); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; font-size: 10px; }.pill-btn:hover { color: var(--text); border-color: var(--line-strong); }.command-spark { color: var(--coral); font-size: 14px; }.pill-btn kbd { margin-left: 2px; }
+.topbar-actions > .icon-btn::before { content: '◐'; font-size: 17px; }.mobile-brand { display: none; }
+.view { display: none; min-height: 0; flex: 1; }.view.active { display: block; }.chat-layout { max-width: 1370px; min-height: calc(100vh - 73px); margin: 0 auto; padding: 63px clamp(24px, 5vw, 85px) 25px; display: grid; grid-template-columns: minmax(390px, 710px) 250px; justify-content: center; gap: clamp(45px, 8vw, 130px); }.chat-column { min-width: 0; min-height: calc(100vh - 161px); display: flex; flex-direction: column; }.welcome-block { margin: 38px 0 41px; }.eyebrow, .rail-label, .modal-kicker { display: flex; align-items: center; gap: 9px; color: var(--coral); font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: .19em; }.eyebrow-line { width: 21px; height: 1px; background: currentColor; }.welcome-block h1 { margin: 20px 0 15px; font-size: clamp(42px, 4.3vw, 65px); line-height: .98; letter-spacing: -.065em; font-weight: 700; }.welcome-block h1 em { color: var(--coral); font-style: normal; }.welcome-block p { max-width: 440px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.message-list { display: grid; gap: 24px; flex: 1; }.message-list:empty { display: none; }.message { display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 12px; animation: rise .35s ease both; }.message.user { grid-template-columns: 1fr; justify-items: end; }.message-avatar { width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; border-radius: 9px; background: var(--panel-2); border: 1px solid var(--line); color: var(--coral); font-size: 15px; }.message.user .message-bubble { max-width: 84%; padding: 11px 14px; border-radius: 13px 13px 3px 13px; background: var(--coral-soft); border: 1px solid rgba(255,121,94,.19); }.message-content { min-width: 0; padding-top: 5px; }.message-head { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }.message-head strong { font-size: 11px; }.message-head time { color: var(--muted-2); font-family: 'DM Mono', monospace; font-size: 9px; }.message-text { color: var(--text); font-size: 13px; line-height: 1.75; overflow-wrap: anywhere; }.message.user .message-text { font-size: 12px; line-height: 1.55; }.message-text p { margin: 0 0 10px; }.message-text p:last-child { margin-bottom: 0; }.message-text h3, .message-text h4 { margin: 0 0 9px; font-size: 14px; letter-spacing: -.02em; }.message-text h4 { color: var(--coral); font-size: 12px; }.message-text ul { margin: 0 0 10px; padding-left: 19px; }.message-text li { margin: 4px 0; padding-left: 3px; }.message-text a { color: var(--coral); text-decoration: underline; text-underline-offset: 2px; }.message-text strong { font-weight: 700; }.message-text code { padding: 2px 5px; color: var(--coral); background: var(--coral-soft); border-radius: 4px; font-family: 'DM Mono', monospace; font-size: .9em; }.message-text pre { position: relative; overflow-x: auto; padding: 15px; margin: 12px 0 4px; border: 1px solid var(--line); border-radius: 9px; background: #0a0c10; color: #dce4f3; font-family: 'DM Mono', monospace; font-size: 11px; line-height: 1.6; }.message-text pre code { padding: 0; color: inherit; background: transparent; }.message-files { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }.message-files span { padding: 4px 7px; color: var(--muted); background: var(--panel-2); border-radius: 5px; font-size: 9px; }.message-actions { display: flex; gap: 4px; margin-top: 9px; opacity: 0; transition: opacity .18s; }.message:hover .message-actions, .message-actions:focus-within { opacity: 1; }.message-actions button { padding: 4px 7px; color: var(--muted-2); background: transparent; border-radius: 5px; font-size: 10px; }.message-actions button:hover { color: var(--text); background: var(--panel-2); }.typing-dots { display: flex; gap: 4px; padding: 8px 0; }.typing-dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--coral); animation: blink 1s infinite; }.typing-dots i:nth-child(2) { animation-delay: .16s; }.typing-dots i:nth-child(3) { animation-delay: .32s; }
+.composer-wrap { margin-top: auto; padding-top: 35px; }.composer-shell { position: relative; padding: 13px 14px 10px; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--panel); box-shadow: 0 11px 34px rgba(0,0,0,.11); transition: border .18s, box-shadow .18s; }.composer-shell:focus-within { border-color: rgba(255,121,94,.5); box-shadow: 0 11px 40px rgba(0,0,0,.18), 0 0 0 3px rgba(255,121,94,.07); }.composer-shell textarea { display: block; width: 100%; min-height: 30px; max-height: 180px; padding: 1px 2px 11px; resize: none; overflow-y: hidden; border: 0; outline: 0; background: transparent; color: var(--text); font-size: 13px; line-height: 1.5; }.composer-shell textarea::placeholder { color: var(--muted-2); }.attachment-strip { display: flex; flex-wrap: wrap; gap: 7px; padding-bottom: 8px; }.attachment-chip { display: flex; align-items: center; gap: 6px; max-width: 180px; padding: 5px 7px; background: var(--panel-3); border: 1px solid var(--line); border-radius: 7px; color: var(--muted); font-size: 10px; }.attachment-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.attachment-chip button { color: var(--muted-2); background: transparent; font-size: 14px; line-height: 12px; }.composer-bottom { display: flex; justify-content: space-between; align-items: center; }.composer-tools, .composer-send-tools { display: flex; align-items: center; gap: 4px; }.tool-btn { display: flex; align-items: center; gap: 6px; padding: 6px 7px; border-radius: 6px; color: var(--muted); background: transparent; font-size: 10px; }.tool-btn:hover, .tool-btn.active { color: var(--text); background: var(--panel-3); }.tool-btn.active .tool-status { color: var(--coral); }.tool-status { color: var(--muted-2); font-family: 'DM Mono', monospace; font-size: 8px; }.plus-circle { font-size: 19px; line-height: 10px; color: var(--muted); font-weight: 300; }.globe-icon { width: 13px; height: 13px; border: 1px solid currentColor; border-radius: 50%; position: relative; }.globe-icon::before { content: ''; position: absolute; inset: 2px 5px; border-left: 1px solid currentColor; border-right: 1px solid currentColor; border-radius: 50%; }.globe-icon::after { content: ''; position: absolute; top: 5px; left: 1px; right: 1px; border-top: 1px solid currentColor; }.thinking-icon { font-size: 16px; line-height: 12px; }.mic-btn::before { content: '♩'; font-size: 17px; transform: rotate(180deg); display: block; }.send-btn { display: flex; width: 32px; height: 32px; align-items: center; justify-content: center; color: #291b19; background: var(--coral); border-radius: 9px; transition: transform .18s, background .18s; }.send-btn:hover { background: #ff8b72; transform: translateY(-1px); }.send-btn:disabled { opacity: .55; cursor: wait; transform: none; }.send-arrow { font-size: 20px; line-height: 1; font-weight: 500; }.composer-note { display: flex; justify-content: space-between; gap: 10px; padding: 9px 4px 0; color: var(--muted-2); font-size: 9px; }.composer-note kbd { height: 16px; min-width: 16px; margin-left: 3px; font-size: 8px; }
+.insight-rail { padding-top: 166px; }.rail-label { margin-bottom: 15px; color: var(--muted-2); font-size: 8px; }.prompt-card { position: relative; display: grid; grid-template-columns: 26px 1fr 15px; gap: 9px; width: 100%; padding: 13px 10px; text-align: left; color: var(--text); background: transparent; border-bottom: 1px solid var(--line); transition: background .18s, padding .18s; }.prompt-card:first-of-type { border-top: 1px solid var(--line); }.prompt-card:hover { padding-left: 14px; padding-right: 6px; background: var(--panel-2); }.prompt-card-icon { width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 14px; }.coral-icon { color: var(--coral); background: var(--coral-soft); }.blue-icon { color: var(--blue); background: rgba(142,174,255,.13); }.yellow-icon { color: var(--yellow); background: rgba(240,201,108,.13); }.prompt-card strong { display: block; margin: 1px 0 4px; font-size: 10px; }.prompt-card small { display: block; color: var(--muted); font-size: 9px; line-height: 1.45; }.card-arrow { color: var(--muted-2); font-size: 14px; }.rail-divider { height: 1px; margin: 28px 0 22px; background: var(--line); }.rail-tip { display: flex; gap: 10px; padding: 0 3px; }.tip-icon { display: flex; flex: 0 0 24px; width: 24px; height: 24px; align-items: center; justify-content: center; border: 1px solid var(--line-strong); border-radius: 7px; color: var(--coral); font-family: 'DM Mono', monospace; font-size: 11px; }.rail-tip strong { font-size: 10px; }.rail-tip p { margin: 5px 0 9px; color: var(--muted); font-size: 9px; line-height: 1.5; }.rail-tip button { padding: 0; color: var(--coral); background: transparent; font-size: 9px; }.rail-tip button span { margin-left: 5px; font-size: 13px; }
+
+.page-view { max-width: 1000px; margin: 0 auto; padding: 70px 35px; }.page-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; margin-bottom: 45px; }.page-heading h2 { margin: 18px 0 7px; font-size: 45px; letter-spacing: -.06em; }.page-heading p { margin: 0; color: var(--muted); }.primary-btn, .secondary-btn, .danger-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 14px; border-radius: 8px; font-size: 11px; font-weight: 700; }.primary-btn { color: #2a1b18; background: var(--coral); }.primary-btn:hover { background: #ff8b72; }.secondary-btn { color: var(--text); background: var(--panel-2); border: 1px solid var(--line); }.secondary-btn:hover { border-color: var(--line-strong); }.danger-btn { color: #ff9d8a; background: rgba(255,121,94,.08); border: 1px solid rgba(255,121,94,.18); }.library-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; }.library-card { min-height: 160px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--line); background: var(--panel); border-radius: 12px; }.library-card:hover { border-color: var(--line-strong); }.file-icon { width: 31px; height: 37px; display: flex; align-items: center; justify-content: center; border-radius: 7px; color: var(--coral); background: var(--coral-soft); font-family: 'DM Mono', monospace; font-size: 9px; }.library-card strong { display: block; margin-top: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }.library-card small { color: var(--muted-2); font-size: 9px; }.empty-state { grid-column: 1/-1; padding: 70px 20px; text-align: center; border: 1px dashed var(--line-strong); border-radius: 12px; }.empty-state-icon { margin: 0 auto 14px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 13px; color: var(--coral); background: var(--coral-soft); font-size: 21px; }.empty-state h3 { margin: 0 0 7px; font-size: 15px; }.empty-state p { margin: 0; color: var(--muted); font-size: 11px; }.prompt-lab-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }.saved-prompt { padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }.saved-prompt:hover { border-color: var(--line-strong); }.saved-prompt-top { display: flex; justify-content: space-between; align-items: center; }.saved-prompt-top span { color: var(--coral); font-size: 19px; }.saved-prompt-top button { color: var(--muted-2); background: transparent; font-size: 15px; }.saved-prompt h3 { margin: 18px 0 7px; font-size: 13px; }.saved-prompt p { min-height: 39px; margin: 0; color: var(--muted); font-size: 11px; line-height: 1.55; }.use-prompt { margin-top: 17px; padding: 0; color: var(--coral); background: transparent; font-size: 10px; font-weight: 700; }
+
+.modal-backdrop { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(5,7,11,.68); backdrop-filter: blur(9px); }.modal-backdrop[hidden] { display: none; }.modal { width: min(100%, 520px); max-height: min(700px, calc(100vh - 40px)); overflow: auto; border: 1px solid var(--line-strong); border-radius: 17px; background: var(--panel); box-shadow: var(--shadow); animation: modal-in .22s ease both; }.modal-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 24px 25px 19px; }.modal-kicker { font-size: 8px; color: var(--coral); }.modal h2 { margin: 10px 0 0; font-size: 25px; letter-spacing: -.04em; }.close-btn { width: 28px; height: 28px; color: var(--muted); background: var(--panel-2); border-radius: 7px; font-size: 21px; line-height: 1; }.close-btn:hover { color: var(--text); }.settings-tabs { display: flex; gap: 3px; padding: 0 25px; border-bottom: 1px solid var(--line); }.settings-tab { padding: 0 2px 12px; margin-right: 18px; color: var(--muted); background: transparent; font-size: 11px; }.settings-tab.active { color: var(--text); border-bottom: 2px solid var(--coral); }.settings-panel { display: none; padding: 22px 25px 25px; }.settings-panel.active { display: block; }.setting-intro { display: flex; gap: 11px; padding: 12px; margin-bottom: 21px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel-2); }.setting-orb { display: flex; flex: 0 0 27px; width: 27px; height: 27px; align-items: center; justify-content: center; color: var(--coral); background: var(--coral-soft); border-radius: 8px; }.setting-intro strong { display: block; margin-bottom: 4px; font-size: 11px; }.setting-intro p, .setting-row p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.5; }.field-label { display: block; margin: 17px 0 7px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .07em; text-transform: uppercase; }.field { width: 100%; min-height: 39px; padding: 0 11px; border: 1px solid var(--line-strong); border-radius: 8px; outline: 0; background: var(--panel-2); color: var(--text); font-size: 11px; }.field:focus { border-color: var(--coral); }.field-help { margin: 7px 0 0; color: var(--muted-2); font-size: 9px; line-height: 1.5; }.conditional-field[hidden] { display: none; }.secret-input { position: relative; }.secret-input .field { padding-right: 55px; }.secret-input button { position: absolute; right: 9px; top: 7px; height: 25px; padding: 0 5px; color: var(--coral); background: transparent; font-size: 9px; }.connection-note { display: flex; align-items: center; gap: 7px; margin-top: 22px; padding: 10px; color: var(--muted); background: var(--panel-2); border-radius: 8px; font-size: 10px; }.connection-note button { margin-left: auto; color: var(--coral); background: transparent; font-size: 10px; }.setting-row { display: flex; justify-content: space-between; align-items: center; gap: 25px; padding: 18px 0; border-bottom: 1px solid var(--line); }.setting-row:first-child { padding-top: 0; }.setting-row strong { display: block; margin-bottom: 5px; font-size: 12px; }.segmented { display: flex; flex-shrink: 0; padding: 3px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); }.segmented button { padding: 5px 7px; color: var(--muted); border-radius: 5px; background: transparent; font-size: 9px; }.segmented button.active { color: var(--text); background: var(--panel-3); }.switch { position: relative; display: block; flex: 0 0 31px; width: 31px; height: 18px; }.switch input { opacity: 0; width: 0; height: 0; }.switch span { position: absolute; inset: 0; border-radius: 20px; background: var(--panel-3); transition: background .2s; }.switch span::before { content: ''; position: absolute; width: 12px; height: 12px; left: 3px; top: 3px; border-radius: 50%; background: var(--muted); transition: transform .2s, background .2s; }.switch input:checked + span { background: var(--coral-soft); }.switch input:checked + span::before { transform: translateX(13px); background: var(--coral); }.privacy-callout { display: flex; gap: 12px; padding: 14px; border: 1px solid rgba(136,215,167,.18); border-radius: 9px; background: rgba(136,215,167,.06); }.privacy-callout > span { color: var(--green); font-size: 18px; }.privacy-callout strong { display: block; margin-bottom: 5px; font-size: 11px; }.privacy-callout p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.55; }.data-actions { display: flex; gap: 9px; margin-top: 22px; }.modal-footer { display: flex; align-items: center; justify-content: space-between; padding: 14px 25px; border-top: 1px solid var(--line); color: var(--muted-2); font-size: 9px; }.modal-footer .primary-btn { min-height: 32px; }
+.command-modal { width: min(100%, 570px); overflow: hidden; }.command-search { display: flex; align-items: center; gap: 11px; padding: 18px; border-bottom: 1px solid var(--line); color: var(--muted); }.command-search input { min-width: 0; flex: 1; outline: 0; border: 0; background: transparent; font-size: 13px; }.command-list { max-height: 310px; overflow: auto; padding: 8px; }.command-item { display: flex; align-items: center; gap: 11px; width: 100%; padding: 10px; border-radius: 8px; background: transparent; color: var(--muted); text-align: left; }.command-item:hover, .command-item.selected { color: var(--text); background: var(--panel-2); }.command-item-icon { display: flex; align-items: center; justify-content: center; width: 25px; height: 25px; border-radius: 7px; color: var(--coral); background: var(--coral-soft); }.command-item-copy { flex: 1; }.command-item-copy strong { display: block; font-size: 11px; }.command-item-copy small { display: block; margin-top: 3px; color: var(--muted-2); font-size: 9px; }.command-item kbd { margin-left: auto; }.command-footer { display: flex; justify-content: space-between; padding: 12px 18px; border-top: 1px solid var(--line); color: var(--muted-2); font-family: 'DM Mono', monospace; font-size: 8px; }.command-footer kbd { margin-left: 4px; margin-right: 2px; }
+.toast { position: fixed; z-index: 50; left: 50%; bottom: 24px; transform: translate(-50%, 15px); max-width: calc(100% - 30px); padding: 10px 14px; border: 1px solid var(--line-strong); border-radius: 9px; background: var(--panel-3); box-shadow: var(--shadow); color: var(--text); opacity: 0; pointer-events: none; font-size: 11px; transition: opacity .2s, transform .2s; }.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.drag-active .composer-shell { border-color: var(--coral); background: var(--coral-soft); }.compact .message-list { gap: 12px; }.compact .message-text { line-height: 1.55; }.compact .welcome-block { margin-bottom: 25px; }
+.sidebar-collapsed .sidebar { flex-basis: 74px; width: 74px; padding-left: 12px; padding-right: 12px; }.sidebar-collapsed .brand-row { justify-content: center; padding-left: 0; padding-right: 0; }.sidebar-collapsed .brand { font-size: 0; }.sidebar-collapsed .sidebar-toggle::before { content: '›'; }.sidebar-collapsed .new-chat-btn { justify-content: center; padding: 0; }.sidebar-collapsed .new-chat-btn > span:not(.new-chat-plus), .sidebar-collapsed .new-chat-btn kbd, .sidebar-collapsed .side-search, .sidebar-collapsed .side-section, .sidebar-collapsed .sidebar-bottom { display: none; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } } @keyframes blink { 0%, 100% { opacity: .25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } } @keyframes modal-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (max-width: 1050px) { .chat-layout { grid-template-columns: minmax(390px, 680px); }.insight-rail { display: none; } }
+@media (max-width: 700px) { .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 286px; box-shadow: var(--shadow); transition: transform .25s ease; }.sidebar.open { transform: translateX(0); }.main-area { width: 100%; }.topbar { height: 62px; flex-basis: 62px; padding: 0 17px; }.mobile-brand { display: inline-flex; font-size: 12px; }.topbar-context { display: none; }.desktop-only { display: none; }.pill-btn { padding: 5px 7px; }.pill-btn kbd { display: none; }.chat-layout { display: block; min-height: calc(100vh - 62px); padding: 28px 17px 18px; }.chat-column { min-height: calc(100vh - 108px); }.welcome-block { margin: 20px 0 28px; }.welcome-block h1 { font-size: 43px; }.welcome-block p { font-size: 12px; }.message.user .message-bubble { max-width: 94%; }.composer-wrap { padding-top: 24px; }.composer-note > span:last-child { display: none; }.tool-btn { padding-left: 4px; padding-right: 4px; }.page-view { padding: 35px 17px; }.page-heading { align-items: flex-start; flex-direction: column; margin-bottom: 28px; gap: 18px; }.page-heading h2 { font-size: 38px; }.library-grid, .prompt-lab-grid { grid-template-columns: 1fr; }.modal-backdrop { padding: 10px; align-items: flex-end; }.modal { max-height: calc(100vh - 20px); }.modal-header, .settings-panel { padding-left: 18px; padding-right: 18px; }.settings-tabs { padding: 0 18px; }.modal-footer { padding-left: 18px; padding-right: 18px; }.side-search kbd { display: none; } }
+@media (min-width: 701px) { .sidebar.open { transform: none; } }
+
+</style>
+  </head>
+  <body>
+    <div class="app-shell" id="appShell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand-row">
+          <a class="brand" href="#" aria-label="PLUTO home" data-action="new-chat">
+            <span class="brand-mark"><span></span><span></span><span></span></span>
+            <span>PLUTO</span>
+          </a>
+          <button class="icon-btn sidebar-toggle" data-action="toggle-sidebar" aria-label="Collapse sidebar" title="Collapse sidebar"></button>
+        </div>
+
+        <button class="new-chat-btn" data-action="new-chat">
+          <span class="new-chat-plus">+</span>
+          <span>New conversation</span>
+          <kbd>⌘ K</kbd>
+        </button>
+
+        <div class="side-search">
+          <span class="search-icon" aria-hidden="true"></span>
+          <input id="chatSearch" type="search" placeholder="Search chats" aria-label="Search chats" />
+          <kbd>⌘ /</kbd>
+        </div>
+
+        <div class="side-section">
+          <div class="section-label"><span>Workspace</span></div>
+          <nav class="side-nav" aria-label="Workspace">
+            <button class="side-nav-item active" data-view="chat"><span class="nav-icon spark-icon"></span>Chat <span class="nav-count">⌘ 1</span></button>
+            <button class="side-nav-item" data-view="library"><span class="nav-icon library-icon"></span>Library</button>
+            <button class="side-nav-item" data-view="prompts"><span class="nav-icon prompt-icon"></span>Prompt lab</button>
+          </nav>
+        </div>
+
+        <div class="side-section conversations-section">
+          <div class="section-label"><span>Recent conversations</span><button class="tiny-add" data-action="new-chat" aria-label="New conversation">+</button></div>
+          <div class="conversation-list" id="conversationList"></div>
+          <button class="show-more" id="showMoreChats" hidden>Show more</button>
+        </div>
+
+        <div class="sidebar-bottom">
+          <div class="usage-card">
+            <div class="usage-card-top"><span class="status-dot"></span><span>Local workspace</span><button class="more-btn" data-action="open-settings" aria-label="Workspace settings">•••</button></div>
+            <div class="usage-bar"><span></span></div>
+            <div class="usage-meta"><span>Storage used</span><strong id="storageUsed">0.0 MB</strong></div>
+          </div>
+          <button class="profile-row" data-action="open-settings">
+            <span class="avatar avatar-you">Y</span>
+            <span class="profile-copy"><strong>Your workspace</strong><small>Personal · Private</small></span>
+            <span class="chevron">›</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="main-area">
+        <header class="topbar">
+          <button class="mobile-brand" data-action="toggle-sidebar" aria-label="Open navigation"><span class="brand-mark"><span></span><span></span><span></span></span><strong>PLUTO</strong></button>
+          <div class="topbar-context" id="topbarContext"><span class="context-dot"></span><span>Private workspace</span></div>
+          <div class="topbar-actions">
+            <button class="pill-btn" data-action="open-command" title="Open command palette"><span class="command-spark">✦</span><span class="desktop-only">Command palette</span><kbd>⌘ K</kbd></button>
+            <button class="icon-btn" data-action="toggle-theme" aria-label="Toggle theme" title="Toggle theme"></button>
+            <button class="avatar avatar-you small-avatar" data-action="open-settings" aria-label="Open settings">Y</button>
+          </div>
+        </header>
+
+        <section class="view active" id="chatView">
+          <div class="chat-layout">
+            <div class="chat-column">
+              <div class="welcome-block" id="welcomeBlock">
+                <div class="eyebrow"><span class="eyebrow-line"></span>THE INTELLIGENCE LAYER</div>
+                <h1>Think bigger.<br /><em>Make it real.</em></h1>
+                <p>PLUTO is your private AI workspace for thinking, creating, and getting things done.</p>
+              </div>
+
+              <div class="message-list" id="messageList" aria-live="polite"></div>
+
+              <div class="composer-wrap" id="composerWrap">
+                <div class="composer-shell" id="composerShell">
+                  <div class="attachment-strip" id="attachmentStrip" hidden></div>
+                  <textarea id="promptInput" rows="1" placeholder="Ask PLUTO anything..." aria-label="Message PLUTO"></textarea>
+                  <div class="composer-bottom">
+                    <div class="composer-tools">
+                      <button class="tool-btn" data-action="attach" title="Attach a file"><span class="plus-circle">+</span><span class="desktop-only">Attach</span></button>
+                      <button class="tool-btn" data-action="toggle-web" title="Toggle web access"><span class="globe-icon"></span><span>Web</span><span class="tool-status" id="webStatus">OFF</span></button>
+                      <button class="tool-btn" data-action="toggle-thinking" title="Toggle extended thinking"><span class="thinking-icon">◒</span><span>Think</span><span class="tool-status" id="thinkStatus">OFF</span></button>
+                    </div>
+                    <div class="composer-send-tools">
+                      <button class="icon-btn mic-btn" data-action="voice-input" aria-label="Voice input" title="Voice input"></button>
+                      <button class="send-btn" id="sendButton" data-action="send" aria-label="Send message" title="Send message"><span class="send-arrow">↑</span></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="composer-note"><span>PLUTO can make mistakes. Check important information.</span><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span></div>
+              </div>
+            </div>
+
+            <aside class="insight-rail" id="insightRail">
+              <div class="rail-label">QUICK START</div>
+              <button class="prompt-card" data-prompt="Turn a messy idea into a clear plan">
+                <span class="prompt-card-icon coral-icon">↗</span><span><strong>From idea to plan</strong><small>Turn a messy thought into clear next steps</small></span><span class="card-arrow">↗</span>
+              </button>
+              <button class="prompt-card" data-prompt="Help me understand this like I'm a curious beginner">
+                <span class="prompt-card-icon blue-icon">◎</span><span><strong>Explain anything</strong><small>Make complex ideas feel simple</small></span><span class="card-arrow">↗</span>
+              </button>
+              <button class="prompt-card" data-prompt="Write a bold first draft for my next big idea">
+                <span class="prompt-card-icon yellow-icon">✦</span><span><strong>Create with me</strong><small>Get past the blank page, faster</small></span><span class="card-arrow">↗</span>
+              </button>
+              <div class="rail-divider"></div>
+              <div class="rail-tip"><span class="tip-icon">⌘</span><div><strong>Build your own flow</strong><p>Use Prompt lab to save the workflows you repeat.</p><button data-view-target="prompts">Explore Prompt lab <span>→</span></button></div></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="libraryView">
+          <div class="page-view">
+            <div class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span>YOUR KNOWLEDGE</div><h2>Library</h2><p>Files and exports saved in this browser.</p></div><button class="primary-btn" data-action="attach"><span>+</span> Add a file</button></div>
+            <div class="library-grid" id="libraryGrid"></div>
+          </div>
+        </section>
+
+        <section class="view" id="promptsView">
+          <div class="page-view">
+            <div class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span>REUSABLE INTELLIGENCE</div><h2>Prompt lab</h2><p>Keep your best instructions close at hand.</p></div><button class="primary-btn" data-action="new-prompt"><span>+</span> New prompt</button></div>
+            <div class="prompt-lab-grid" id="promptLabGrid"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <input type="file" id="fileInput" multiple hidden accept=".txt,.md,.csv,.json,.js,.ts,.py,.html,.css,.pdf,image/*" />
+
+    <div class="modal-backdrop" id="settingsModal" hidden>
+      <section class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal-header"><div><span class="modal-kicker">CONTROL CENTER</span><h2 id="settingsTitle">Settings</h2></div><button class="close-btn" data-action="close-modal" aria-label="Close">×</button></div>
+        <div class="settings-tabs"><button class="settings-tab active" data-settings-tab="connection">Connection</button><button class="settings-tab" data-settings-tab="appearance">Appearance</button><button class="settings-tab" data-settings-tab="data">Data & privacy</button></div>
+        <div class="settings-panel active" data-settings-panel="connection">
+          <div class="setting-intro"><span class="setting-orb">✦</span><div><strong>Choose how PLUTO thinks</strong><p>Keys stay in this browser and are never sent anywhere except the provider you select.</p></div></div>
+          <label class="field-label" for="providerSelect">Provider</label>
+          <select class="field" id="providerSelect"><option value="demo">PLUTO Demo · no key needed</option><option value="openrouter">OpenRouter · free models</option><option value="huggingface">Hugging Face · inference API</option><option value="ollama">Ollama · local models</option><option value="custom">Custom OpenAI-compatible endpoint</option></select>
+          <p class="field-help" id="providerHelp">Instant local demo mode. Connect a provider for live model responses.</p>
+          <div id="endpointField" class="conditional-field" hidden><label class="field-label" for="endpointInput">Endpoint URL</label><input class="field" id="endpointInput" type="url" placeholder="https://your-endpoint.example/v1/chat/completions" /><p class="field-help">For a browser-safe, OpenAI-compatible endpoint. Use a server-side proxy in production.</p></div>
+          <div id="apiKeyField" class="conditional-field" hidden><label class="field-label" for="apiKeyInput">API key <span class="optional">optional</span></label><div class="secret-input"><input class="field" id="apiKeyInput" type="password" autocomplete="off" placeholder="Paste your key here" /><button data-action="toggle-secret" aria-label="Show API key">Show</button></div><p class="field-help">PLUTO will not invent or expose API keys. Use a free model or your own key.</p></div>
+          <label class="field-label" for="modelSelect">Model</label>
+          <select class="field" id="modelSelect"></select>
+          <div class="connection-note"><span class="connection-dot"></span><span id="connectionStatus">Running in no-key demo mode</span><button data-action="test-connection">Test</button></div>
+        </div>
+        <div class="settings-panel" data-settings-panel="appearance">
+          <div class="setting-row"><div><strong>Interface theme</strong><p>Choose the atmosphere for your workspace.</p></div><div class="segmented"><button data-theme-choice="dark">Dark</button><button data-theme-choice="light">Light</button><button data-theme-choice="system">System</button></div></div>
+          <div class="setting-row"><div><strong>Compact layout</strong><p>Fit more conversation on screen.</p></div><label class="switch"><input type="checkbox" id="compactToggle" /><span></span></label></div>
+          <div class="setting-row"><div><strong>Show starter rail</strong><p>Keep quick-start ideas beside new chats.</p></div><label class="switch"><input type="checkbox" id="railToggle" checked /><span></span></label></div>
+        </div>
+        <div class="settings-panel" data-settings-panel="data">
+          <div class="privacy-callout"><span>◈</span><div><strong>Private by default</strong><p>Your conversations, files, and preferences are stored locally in this browser. Demo mode never calls a remote service.</p></div></div>
+          <div class="data-actions"><button class="secondary-btn" data-action="export-all">Download all data</button><button class="danger-btn" data-action="clear-data">Clear local data</button></div>
+        </div>
+        <div class="modal-footer"><span id="saveHint">Changes save automatically</span><button class="primary-btn" data-action="close-modal">Done</button></div>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="commandModal" hidden>
+      <section class="modal command-modal" role="dialog" aria-modal="true" aria-label="Command palette">
+        <div class="command-search"><span class="search-icon"></span><input id="commandInput" type="search" placeholder="Search commands..." autocomplete="off" /><kbd>ESC</kbd></div>
+        <div class="command-list" id="commandList"></div>
+        <div class="command-footer"><span>PLUTO command palette</span><span><kbd>↵</kbd> select <kbd>esc</kbd> close</span></div>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+    <script>
+(() => {
+  'use strict';
+
+  const STORAGE_KEY = 'pluto-workspace-v1';
+  const SETTINGS_KEY = 'pluto-settings-v1';
+  const now = Date.now();
+
+  const modelCatalog = {
+    demo: [
+      { value: 'pluto-demo', label: 'PLUTO Demo · instant, no key' }
+    ],
+    openrouter: [
+      { value: 'meta-llama/llama-3.3-8b-instruct:free', label: 'Llama 3.3 8B · free' },
+      { value: 'qwen/qwen3-4b:free', label: 'Qwen 3 4B · free' },
+      { value: 'google/gemma-3-4b-it:free', label: 'Gemma 3 4B · free' },
+      { value: 'deepseek/deepseek-r1-0528:free', label: 'DeepSeek R1 · free' }
+    ],
+    huggingface: [
+      { value: 'Qwen/Qwen2.5-72B-Instruct', label: 'Qwen 2.5 72B Instruct' },
+      { value: 'meta-llama/Llama-3.3-70B-Instruct', label: 'Llama 3.3 70B Instruct' },
+      { value: 'mistralai/Mistral-7B-Instruct-v0.3', label: 'Mistral 7B Instruct' }
+    ],
+    ollama: [
+      { value: 'llama3.2', label: 'Llama 3.2 · local' },
+      { value: 'qwen2.5:7b', label: 'Qwen 2.5 7B · local' },
+      { value: 'gemma3:4b', label: 'Gemma 3 4B · local' }
+    ],
+    custom: [{ value: 'your-model', label: 'Your model' }]
+  };
+
+  const providerLabels = {
+    demo: 'No-key demo',
+    openrouter: 'OpenRouter',
+    huggingface: 'Hugging Face',
+    ollama: 'Ollama',
+    custom: 'Custom endpoint'
+  };
+
+  const defaultPrompts = [
+    { id: 'p1', title: 'Clarity editor', description: 'Turn a rough thought into a clear, confident piece of writing.', prompt: 'Act as a clarity editor. Keep my voice, remove fluff, and give me a polished version plus a short note on the biggest improvements.' },
+    { id: 'p2', title: 'Idea architect', description: 'Shape a raw idea into a useful plan with milestones and trade-offs.', prompt: 'Be my idea architect. Ask only the most important questions, then turn my idea into a practical plan with milestones, risks, and a first action.' },
+    { id: 'p3', title: 'Socratic tutor', description: 'Learn difficult topics through questions, examples, and retrieval.', prompt: 'Be a patient Socratic tutor. Teach me this topic from first principles, check my understanding with one question at a time, and use memorable examples.' },
+    { id: 'p4', title: 'Code reviewer', description: 'Find bugs, explain them plainly, and suggest the smallest good fix.', prompt: 'Review the code I provide. Identify correctness issues, security concerns, and maintainability problems. Explain why each matters and show a focused patch.' }
+  ];
+
+  const sampleConversations = [
+    { id: 'sample-1', title: 'A second brain for your ideas', updatedAt: now - 1000 * 60 * 22, messages: [] },
+    { id: 'sample-2', title: 'Build a better morning routine', updatedAt: now - 1000 * 60 * 60 * 4, messages: [] },
+    { id: 'sample-3', title: 'Notes from the future', updatedAt: now - 1000 * 60 * 60 * 21, messages: [] }
+  ];
+
+  const defaultState = {
+    conversations: sampleConversations,
+    selectedId: null,
+    files: [],
+    prompts: defaultPrompts,
+    settings: {
+      provider: 'demo',
+      model: 'pluto-demo',
+      endpoint: '',
+      apiKey: '',
+      theme: 'dark',
+      compact: false,
+      rail: true,
+      web: false,
+      thinking: false
+    }
+  };
+
+  let state = loadState();
+  let isGenerating = false;
+  let attachedFiles = [];
+  let visibleChatCount = 8;
+  let toastTimer;
+  let recognition;
+  let commandSelection = 0;
+
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const elements = {
+    shell: $('#appShell'),
+    messageList: $('#messageList'),
+    welcome: $('#welcomeBlock'),
+    composerShell: $('#composerShell'),
+    composer: $('#promptInput'),
+    send: $('#sendButton'),
+    attachments: $('#attachmentStrip'),
+    conversationList: $('#conversationList'),
+    search: $('#chatSearch'),
+    storage: $('#storageUsed'),
+    rail: $('#insightRail'),
+    sidebar: $('#sidebar'),
+    topbarContext: $('#topbarContext'),
+    fileInput: $('#fileInput'),
+    library: $('#libraryGrid'),
+    promptLab: $('#promptLabGrid'),
+    toast: $('#toast'),
+    settingsModal: $('#settingsModal'),
+    commandModal: $('#commandModal'),
+    commandInput: $('#commandInput'),
+    commandList: $('#commandList'),
+    provider: $('#providerSelect'),
+    model: $('#modelSelect'),
+    endpoint: $('#endpointInput'),
+    apiKey: $('#apiKeyInput'),
+    endpointField: $('#endpointField'),
+    apiKeyField: $('#apiKeyField'),
+    providerHelp: $('#providerHelp'),
+    connectionStatus: $('#connectionStatus'),
+    compact: $('#compactToggle'),
+    railToggle: $('#railToggle')
+  };
+
+  function loadState() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      if (!stored) return structuredClone(defaultState);
+      return {
+        ...structuredClone(defaultState),
+        ...stored,
+        settings: { ...defaultState.settings, ...(stored.settings || {}) },
+        conversations: Array.isArray(stored.conversations) ? stored.conversations : [],
+        files: Array.isArray(stored.files) ? stored.files : [],
+        prompts: Array.isArray(stored.prompts) && stored.prompts.length ? stored.prompts : defaultPrompts
+      };
+    } catch (error) {
+      return structuredClone(defaultState);
+    }
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      updateStorageMeter();
+    } catch (error) {
+      showToast('Your browser storage is full. Export your data to keep a backup.');
+    }
+  }
+
+  function escapeHTML(value = '') {
+    return String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
+  }
+
+  function renderMarkdown(value = '') {
+    let text = escapeHTML(value);
+    const codeBlocks = [];
+    text = text.replace(/```([\w-]*)\n?([\s\S]*?)```/g, (_, language, code) => {
+      const index = codeBlocks.push(`<pre><code>${code.trim()}</code></pre>`) - 1;
+      return `@@CODE_BLOCK_${index}@@`;
+    });
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+    text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+    text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    const blocks = text.split(/\n{2,}/).map((block) => {
+      if (/^@@CODE_BLOCK_\d+@@$/.test(block.trim())) return block.trim();
+      const lines = block.split('\n');
+      if (lines.every((line) => /^[-*] /.test(line))) {
+        return `<ul>${lines.map((line) => `<li>${line.slice(2)}</li>`).join('')}</ul>`;
+      }
+      if (/^### /.test(block)) return `<h4>${block.replace(/^### /, '')}</h4>`;
+      if (/^## /.test(block)) return `<h3>${block.replace(/^## /, '')}</h3>`;
+      return `<p>${block.replace(/\n/g, '<br>')}</p>`;
+    }).join('');
+    return blocks.replace(/@@CODE_BLOCK_(\d+)@@/g, (_, index) => codeBlocks[Number(index)]);
+  }
+
+  function formatTime(timestamp) {
+    const delta = Math.max(0, Date.now() - timestamp);
+    if (delta < 60 * 1000) return 'now';
+    if (delta < 60 * 60 * 1000) return `${Math.floor(delta / (60 * 1000))}m`;
+    if (delta < 24 * 60 * 60 * 1000) return `${Math.floor(delta / (60 * 60 * 1000))}h`;
+    return new Date(timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+
+  function currentConversation() {
+    return state.conversations.find((conversation) => conversation.id === state.selectedId) || null;
+  }
+
+  function makeId(prefix = 'id') {
+    return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+  }
+
+  function deriveTitle(text) {
+    const cleaned = text.replace(/\s+/g, ' ').trim();
+    return cleaned.length > 34 ? `${cleaned.slice(0, 34).trim()}…` : (cleaned || 'New conversation');
+  }
+
+  function renderConversationList() {
+    const query = elements.search.value.trim().toLowerCase();
+    const filtered = [...state.conversations]
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+      .filter((conversation) => !query || conversation.title.toLowerCase().includes(query));
+    const visible = filtered.slice(0, visibleChatCount);
+    elements.conversationList.innerHTML = visible.length ? visible.map((conversation) => `
+      <button class="conversation-item ${conversation.id === state.selectedId ? 'active' : ''}" data-conversation-id="${escapeHTML(conversation.id)}">
+        <span class="conversation-symbol">${conversation.id.startsWith('sample') ? '◌' : '✦'}</span>
+        <span class="conversation-title">${escapeHTML(conversation.title)}</span>
+        <span class="conversation-time">${formatTime(conversation.updatedAt)}</span>
+      </button>`).join('') : `<div class="empty-side-state">${query ? 'No matching chats' : 'Your chats will appear here'}</div>`;
+    $('#showMoreChats').hidden = filtered.length <= visibleChatCount;
+  }
+
+  function renderMessages() {
+    const conversation = currentConversation();
+    const messages = conversation?.messages || [];
+    elements.welcome.style.display = messages.length ? 'none' : '';
+    elements.messageList.innerHTML = messages.map((message, index) => renderMessage(message, index)).join('');
+    elements.rail.style.display = state.settings.rail && !messages.length ? '' : 'none';
+    if (messages.length) {
+      requestAnimationFrame(() => { elements.messageList.scrollTop = elements.messageList.scrollHeight; });
+    }
+  }
+
+  function renderMessage(message, index) {
+    const isUser = message.role === 'user';
+    const body = isUser ? escapeHTML(message.content).replace(/\n/g, '<br>') : renderMarkdown(message.content);
+    const fileNote = message.attachments?.length ? `<div class="message-files">${message.attachments.map((file) => `<span>⌁ ${escapeHTML(file.name)}</span>`).join('')}</div>` : '';
+    return `<article class="message ${isUser ? 'user' : 'assistant'}" data-message-index="${index}">
+      ${isUser ? '' : '<div class="message-avatar">✦</div>'}
+      <div class="message-bubble"><div class="message-content"><div class="message-head"><strong>${isUser ? 'You' : 'PLUTO'}</strong><time>${formatTime(message.timestamp || Date.now())}</time></div><div class="message-text">${body}</div>${fileNote}<div class="message-actions">
+        <button data-message-action="copy">Copy</button>${isUser ? '<button data-message-action="edit">Edit</button>' : '<button data-message-action="speak">Read aloud</button><button data-message-action="regenerate">Regenerate</button>'}
+      </div></div></div>
+    </article>`;
+  }
+
+  function renderAttachments() {
+    elements.attachments.hidden = !attachedFiles.length;
+    elements.attachments.innerHTML = attachedFiles.map((file, index) => `<div class="attachment-chip"><span>⌁ ${escapeHTML(file.name)}</span><button data-remove-attachment="${index}" aria-label="Remove ${escapeHTML(file.name)}">×</button></div>`).join('');
+  }
+
+  function renderLibrary() {
+    if (!state.files.length) {
+      elements.library.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⌁</div><h3>Your library is waiting</h3><p>Attach notes, code, or images from a conversation to see them here.</p></div>`;
+      return;
+    }
+    elements.library.innerHTML = state.files.map((file) => `<article class="library-card"><div class="file-icon">${escapeHTML(file.extension || 'FILE').slice(0, 5).toUpperCase()}</div><div><strong title="${escapeHTML(file.name)}">${escapeHTML(file.name)}</strong><small>${formatBytes(file.size)} · ${formatTime(file.addedAt)}</small></div></article>`).join('');
+  }
+
+  function renderPromptLab() {
+    elements.promptLab.innerHTML = state.prompts.map((prompt) => `<article class="saved-prompt"><div class="saved-prompt-top"><span>✦</span><button data-delete-prompt="${escapeHTML(prompt.id)}" aria-label="Delete ${escapeHTML(prompt.title)}">×</button></div><h3>${escapeHTML(prompt.title)}</h3><p>${escapeHTML(prompt.description)}</p><button class="use-prompt" data-use-prompt="${escapeHTML(prompt.id)}">Use prompt <span>→</span></button></article>`).join('');
+  }
+
+  function formatBytes(bytes = 0) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  function updateStorageMeter() {
+    try {
+      const bytes = new Blob([localStorage.getItem(STORAGE_KEY) || '']).size;
+      elements.storage.textContent = formatBytes(bytes);
+    } catch (error) { elements.storage.textContent = '0.0 MB'; }
+  }
+
+  function setView(viewName) {
+    $$('.view').forEach((view) => view.classList.toggle('active', view.id === `${viewName}View`));
+    $$('.side-nav-item').forEach((item) => item.classList.toggle('active', item.dataset.view === viewName));
+    if (viewName === 'library') renderLibrary();
+    if (viewName === 'prompts') renderPromptLab();
+  }
+
+  function createConversation() {
+    state.selectedId = null;
+    attachedFiles = [];
+    renderAttachments();
+    setView('chat');
+    renderMessages();
+    elements.composer.focus();
+    if (window.innerWidth < 701) elements.sidebar.classList.remove('open');
+  }
+
+  function selectConversation(id) {
+    state.selectedId = id;
+    saveState();
+    renderConversationList();
+    renderMessages();
+    setView('chat');
+  }
+
+  function ensureConversation(firstMessage) {
+    let conversation = currentConversation();
+    if (!conversation) {
+      conversation = { id: makeId('chat'), title: deriveTitle(firstMessage), updatedAt: Date.now(), messages: [] };
+      state.conversations.push(conversation);
+      state.selectedId = conversation.id;
+    }
+    if (!conversation.messages.length) conversation.title = deriveTitle(firstMessage);
+    return conversation;
+  }
+
+  function buildContext(conversation) {
+    const context = conversation.messages.map((message) => ({ role: message.role, content: message.content }));
+    if (state.settings.thinking) context.unshift({ role: 'system', content: 'Think carefully and show concise reasoning summaries, but do not reveal private chain-of-thought.' });
+    context.unshift({ role: 'system', content: 'You are PLUTO, a capable, direct, and creative AI workspace assistant. Be honest about uncertainty. Give useful structure and ask a clarifying question only when it materially improves the result.' });
+    return context;
+  }
+
+  function getAttachmentContext(files) {
+    return files.map((file) => file.text ? `\n\nAttached file: ${file.name}\n${file.text.slice(0, 10000)}` : `\n\nAttached file: ${file.name} (${file.type || 'binary file'})`).join('');
+  }
+
+  async function sendMessage() {
+    if (isGenerating) return;
+    const text = elements.composer.value.trim();
+    if (!text && !attachedFiles.length) return;
+    const prompt = text || 'Please take a look at the attached file.';
+    const filesForMessage = attachedFiles.map(({ name, size, type }) => ({ name, size, type }));
+    const conversation = ensureConversation(prompt);
+    conversation.messages.push({ role: 'user', content: prompt + getAttachmentContext(attachedFiles), attachments: filesForMessage, timestamp: Date.now() });
+    conversation.updatedAt = Date.now();
+    const filesToSave = attachedFiles;
+    attachedFiles = [];
+    elements.composer.value = '';
+    resizeComposer();
+    renderAttachments();
+    saveState();
+    renderConversationList();
+    renderMessages();
+    setView('chat');
+    isGenerating = true;
+    elements.send.disabled = true;
+    const typing = addTypingMessage();
+    try {
+      const answer = await callProvider(buildContext(conversation), prompt, filesToSave);
+      typing.remove();
+      conversation.messages.push({ role: 'assistant', content: answer, timestamp: Date.now() });
+      conversation.updatedAt = Date.now();
+      saveState();
+      renderConversationList();
+      renderMessages();
+    } catch (error) {
+      typing.remove();
+      const friendly = error?.message || 'The provider did not return a response.';
+      conversation.messages.push({ role: 'assistant', content: `I couldn't connect to that provider.\n\n**${friendly}**\n\nOpen **Settings → Connection** to check the provider, endpoint, and key. You can switch back to **PLUTO Demo** for an instant no-key response.`, timestamp: Date.now() });
+      saveState();
+      renderMessages();
+      showToast(friendly);
+    } finally {
+      isGenerating = false;
+      elements.send.disabled = false;
+      elements.composer.focus();
+    }
+  }
+
+  function addTypingMessage() {
+    const node = document.createElement('article');
+    node.className = 'message assistant typing-message';
+    node.innerHTML = '<div class="message-avatar">✦</div><div class="message-content"><div class="message-head"><strong>PLUTO</strong><time>thinking</time></div><div class="typing-dots"><i></i><i></i><i></i></div></div>';
+    elements.messageList.appendChild(node);
+    requestAnimationFrame(() => { elements.messageList.scrollTop = elements.messageList.scrollHeight; });
+    return node;
+  }
+
+  async function callProvider(messages, prompt, files) {
+    const provider = state.settings.provider;
+    if (provider === 'demo') return demoResponse(prompt, files);
+    if (provider === 'ollama') {
+      const endpoint = state.settings.endpoint.trim();
+      if (!endpoint) throw new Error('Add your Ollama endpoint in Settings first.');
+      const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: state.settings.model, messages, stream: false }) });
+      if (!response.ok) throw new Error(`Ollama returned ${response.status}.`);
+      const data = await response.json();
+      return data.message?.content || data.response || 'The model returned an empty response.';
+    }
+    const endpoint = provider === 'openrouter'
+      ? 'https://openrouter.ai/api/v1/chat/completions'
+      : provider === 'huggingface'
+        ? 'https://router.huggingface.co/v1/chat/completions'
+        : state.settings.endpoint.trim();
+    if (!endpoint) throw new Error('Add an OpenAI-compatible endpoint in Settings first.');
+    if (!state.settings.apiKey.trim() && provider !== 'custom') throw new Error(`Add your ${providerLabels[provider]} API key in Settings first.`);
+    const headers = { 'Content-Type': 'application/json' };
+    if (state.settings.apiKey.trim()) headers.Authorization = `Bearer ${state.settings.apiKey.trim()}`;
+    if (provider === 'openrouter') { headers['HTTP-Referer'] = window.location.origin; headers['X-Title'] = 'PLUTO AI workspace'; }
+    const response = await fetch(endpoint, { method: 'POST', headers, body: JSON.stringify({ model: state.settings.model, messages, temperature: .7, stream: false }) });
+    if (!response.ok) {
+      let detail = '';
+      try { detail = (await response.json()).error?.message || ''; } catch (_) { /* empty response */ }
+      throw new Error(`${providerLabels[provider]} returned ${response.status}${detail ? `: ${detail}` : '.'}`);
+    }
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || data.choices?.[0]?.text || data.generated_text || 'The model returned an empty response.';
+  }
+
+  async function demoResponse(prompt, files) {
+    await new Promise((resolve) => setTimeout(resolve, 650 + Math.random() * 550));
+    const lower = prompt.toLowerCase();
+    const attachmentLine = files.length ? ` I can also work from ${files.length === 1 ? 'that attachment' : 'those attachments'} once you tell me what outcome you want.` : '';
+    if (/plan|roadmap|steps|organize|routine/.test(lower)) return `## A clear way forward\n\nHere’s a practical first pass:\n\n- **Define the finish line** — describe what “done” looks like in one sentence.\n- **Choose the smallest useful milestone** — something you can complete in the next 30–60 minutes.\n- **Sequence the work** — put prerequisites before polish, and leave room for feedback.\n- **Set a review point** — decide when you will pause, measure progress, and adjust.\n\n**Your next move:** write the one-sentence finish line, then I’ll turn it into a focused plan.${attachmentLine}`;
+    if (/explain|understand|teach|beginner|what is/.test(lower)) return `## Let’s make it simple\n\nStart with the core idea: **every complicated system is made of smaller parts that interact**. We can name the parts, see how they connect, and then use one concrete example.\n\nTell me the topic, your current level, and what you want to be able to do with it. I’ll explain it in plain language, then check your understanding with a quick example.`;
+    if (/code|javascript|python|html|bug|function|program/.test(lower)) return `## Code mode\n\nI can help you design, debug, review, or explain code. For the strongest result, include the smallest reproducible snippet and what you expected to happen.\n\n\`\`\`js\n// Paste your snippet here\nconst goal = 'make it work';\n\`\`\`\n\nI’ll return the diagnosis, a focused fix, and any edge cases worth testing.`;
+    if (/write|draft|email|story|copy|create/.test(lower)) return `## Let’s get the first draft down\n\nGive me the audience, the feeling you want to create, and any must-include points. I can make the result sharp, warm, persuasive, playful, or deliberately strange — and I’ll explain the choices if you want.${attachmentLine}`;
+    return `I’m PLUTO in **Demo mode** — a fast, private way to explore the workspace with no API key.\n\nI can help you think, write, research from material you provide, plan projects, explain difficult ideas, review code, or turn rough notes into something useful.\n\nFor live model responses, open **Settings → Connection** and choose a provider. Your key stays in this browser and is sent only to the provider you select.${attachmentLine}`;
+  }
+
+  function openModal(modal) { modal.hidden = false; document.body.style.overflow = 'hidden'; }
+  function closeModals() { $$('.modal-backdrop').forEach((modal) => { modal.hidden = true; }); document.body.style.overflow = ''; }
+
+  function openSettings(tab = 'connection') {
+    elements.provider.value = state.settings.provider;
+    elements.endpoint.value = state.settings.endpoint || '';
+    elements.apiKey.value = state.settings.apiKey || '';
+    elements.compact.checked = !!state.settings.compact;
+    elements.railToggle.checked = state.settings.rail !== false;
+    updateProviderFields();
+    switchSettingsTab(tab);
+    openModal(elements.settingsModal);
+  }
+
+  function switchSettingsTab(tab) {
+    $$('.settings-tab').forEach((item) => item.classList.toggle('active', item.dataset.settingsTab === tab));
+    $$('[data-settings-panel]').forEach((panel) => panel.classList.toggle('active', panel.dataset.settingsPanel === tab));
+  }
+
+  function updateProviderFields() {
+    const provider = elements.provider.value;
+    const options = modelCatalog[provider] || modelCatalog.custom;
+    elements.model.innerHTML = options.map((option) => `<option value="${escapeHTML(option.value)}">${escapeHTML(option.label)}</option>`).join('');
+    const modelStillExists = options.some((option) => option.value === state.settings.model);
+    elements.model.value = modelStillExists ? state.settings.model : options[0].value;
+    elements.endpointField.hidden = !['ollama', 'custom'].includes(provider);
+    elements.apiKeyField.hidden = !['openrouter', 'huggingface', 'custom'].includes(provider);
+    const help = {
+      demo: 'Instant local demo mode. No requests leave this browser.',
+      openrouter: 'Connect to OpenRouter and choose one of its free models. Free availability can change.',
+      huggingface: 'Use a Hugging Face Router model with your own access token.',
+      ollama: 'Point PLUTO at an Ollama server running on a machine you control.',
+      custom: 'Use any CORS-enabled OpenAI-compatible chat completions endpoint.'
+    };
+    elements.providerHelp.textContent = help[provider];
+    elements.connectionStatus.textContent = provider === 'demo' ? 'Running in no-key demo mode' : `${providerLabels[provider]} configured locally`;
+  }
+
+  function persistSettings() {
+    state.settings.provider = elements.provider.value;
+    state.settings.model = elements.model.value;
+    state.settings.endpoint = elements.endpoint.value.trim();
+    state.settings.apiKey = elements.apiKey.value;
+    state.settings.compact = elements.compact.checked;
+    state.settings.rail = elements.railToggle.checked;
+    document.documentElement.dataset.theme = state.settings.theme;
+    elements.shell.classList.toggle('compact', state.settings.compact);
+    elements.rail.style.display = state.settings.rail && !currentConversation()?.messages?.length ? '' : 'none';
+    saveState();
+    updateTopbar();
+  }
+
+  function updateTopbar() {
+    elements.topbarContext.innerHTML = `<span class="context-dot"></span><span>${escapeHTML(providerLabels[state.settings.provider])} · Private workspace</span>`;
+  }
+
+  function setTheme(theme) {
+    state.settings.theme = theme;
+    document.documentElement.dataset.theme = theme === 'system' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : theme;
+    $$('.segmented button').forEach((button) => button.classList.toggle('active', button.dataset.themeChoice === theme));
+    persistSettings();
+  }
+
+  function showToast(message) {
+    clearTimeout(toastTimer);
+    elements.toast.textContent = message;
+    elements.toast.classList.add('show');
+    toastTimer = setTimeout(() => elements.toast.classList.remove('show'), 3000);
+  }
+
+  function resizeComposer() {
+    elements.composer.style.height = 'auto';
+    elements.composer.style.height = `${Math.min(elements.composer.scrollHeight, 180)}px`;
+    elements.composer.style.overflowY = elements.composer.scrollHeight > 180 ? 'auto' : 'hidden';
+  }
+
+  function handleFiles(fileList) {
+    const files = [...fileList];
+    if (!files.length) return;
+    Promise.all(files.slice(0, 6).map(async (file) => {
+      let text = '';
+      if (file.type.startsWith('text/') || /\.(md|txt|csv|json|js|ts|py|html|css)$/i.test(file.name)) {
+        try { text = await file.text(); } catch (_) { /* binary or unreadable */ }
+      }
+      return { name: file.name, size: file.size, type: file.type, extension: file.name.includes('.') ? file.name.split('.').pop() : 'file', text, addedAt: Date.now() };
+    })).then((newFiles) => {
+      attachedFiles.push(...newFiles);
+      const seen = new Set();
+      attachedFiles = attachedFiles.filter((file) => !seen.has(file.name) && seen.add(file.name));
+      newFiles.forEach((file) => {
+        if (!state.files.some((saved) => saved.name === file.name && saved.size === file.size)) state.files.push({ ...file, text: undefined });
+      });
+      saveState();
+      renderAttachments();
+      showToast(`${newFiles.length} file${newFiles.length === 1 ? '' : 's'} ready to attach`);
+    });
+  }
+
+  function downloadFile(filename, content, type = 'text/plain') {
+    const blob = new Blob([content], { type });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(link.href), 500);
+  }
+
+  function exportConversation(format = 'html') {
+    const conversation = currentConversation();
+    if (!conversation || !conversation.messages.length) { showToast('Start a conversation before exporting it.'); return; }
+    const baseName = conversation.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'pluto-conversation';
+    if (format === 'json') return downloadFile(`${baseName}.json`, JSON.stringify(conversation, null, 2), 'application/json');
+    if (format === 'md') {
+      const markdown = `# ${conversation.title}\n\n${conversation.messages.map((message) => `## ${message.role === 'user' ? 'You' : 'PLUTO'}\n\n${message.content}`).join('\n\n')}`;
+      return downloadFile(`${baseName}.md`, markdown, 'text/markdown');
+    }
+    if (format === 'txt') {
+      const plain = `${conversation.title}\n\n${conversation.messages.map((message) => `${message.role === 'user' ? 'You' : 'PLUTO'}:\n${message.content}`).join('\n\n')}`;
+      return downloadFile(`${baseName}.txt`, plain, 'text/plain');
+    }
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHTML(conversation.title)} · PLUTO</title><style>body{margin:0;padding:40px;max-width:760px;font:16px/1.7 system-ui,sans-serif;color:#20232d}h1{font-size:32px;line-height:1.1}h2{margin-top:32px;font-size:13px;color:#e86652;text-transform:uppercase;letter-spacing:.1em}pre{padding:14px;background:#f1f2f5;border-radius:8px;overflow:auto}p{white-space:pre-wrap}</style></head><body><h1>${escapeHTML(conversation.title)}</h1>${conversation.messages.map((message) => `<h2>${message.role === 'user' ? 'You' : 'PLUTO'}</h2><p>${escapeHTML(message.content)}</p>`).join('')}</body></html>`;
+    downloadFile(`${baseName}.html`, html, 'text/html');
+    showToast('HTML export downloaded');
+  }
+
+  function exportAllData() {
+    downloadFile('pluto-workspace.json', JSON.stringify({ ...state, settings: { ...state.settings, apiKey: state.settings.apiKey ? '[stored locally — redacted in export]' : '' } }, null, 2), 'application/json');
+    showToast('Workspace backup downloaded');
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+    const area = document.createElement('textarea'); area.value = text; document.body.appendChild(area); area.select(); document.execCommand('copy'); area.remove(); return Promise.resolve();
+  }
+
+  function speak(text) {
+    if (!('speechSynthesis' in window)) { showToast('Read aloud is not supported in this browser.'); return; }
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = .98;
+    speechSynthesis.speak(utterance);
+  }
+
+  function startVoiceInput() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) { showToast('Voice input is not supported in this browser.'); return; }
+    if (recognition) { recognition.stop(); recognition = null; return; }
+    recognition = new SpeechRecognition();
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.onstart = () => { $('.mic-btn').classList.add('active'); showToast('Listening…'); };
+    recognition.onresult = (event) => {
+      const result = [...event.results].map((item) => item[0].transcript).join('');
+      elements.composer.value = result;
+      resizeComposer();
+    };
+    recognition.onerror = () => showToast('Voice input could not start. Check your browser permission.');
+    recognition.onend = () => { $('.mic-btn').classList.remove('active'); recognition = null; };
+    recognition.start();
+  }
+
+  function commandItems() {
+    return [
+      { id: 'new', icon: '+', title: 'New conversation', hint: 'Start with a blank canvas', key: '⌘ N', action: createConversation },
+      { id: 'settings', icon: '⚙', title: 'Open settings', hint: 'Provider, model, theme, and privacy', action: () => openSettings() },
+      { id: 'html', icon: '↧', title: 'Download current chat as HTML', hint: 'Save a readable web page', action: () => exportConversation('html') },
+      { id: 'markdown', icon: 'M', title: 'Download current chat as Markdown', hint: 'Portable plain-text format', action: () => exportConversation('md') },
+      { id: 'json', icon: '{}', title: 'Download current chat as JSON', hint: 'Keep the full conversation data', action: () => exportConversation('json') },
+      { id: 'library', icon: '▤', title: 'Open library', hint: 'Browse attached files', action: () => setView('library') },
+      { id: 'prompts', icon: '✦', title: 'Open Prompt lab', hint: 'Reuse your best workflows', action: () => setView('prompts') }
+    ];
+  }
+
+  function renderCommands(filter = '') {
+    const query = filter.toLowerCase();
+    const items = commandItems().filter((item) => `${item.title} ${item.hint}`.toLowerCase().includes(query));
+    commandSelection = Math.min(commandSelection, Math.max(0, items.length - 1));
+    elements.commandList.innerHTML = items.length ? items.map((item, index) => `<button class="command-item ${index === commandSelection ? 'selected' : ''}" data-command-id="${item.id}"><span class="command-item-icon">${item.icon}</span><span class="command-item-copy"><strong>${item.title}</strong><small>${item.hint}</small></span>${item.key ? `<kbd>${item.key}</kbd>` : ''}</button>`).join('') : '<div class="empty-side-state">No commands found</div>';
+  }
+
+  function openCommand() {
+    commandSelection = 0;
+    renderCommands();
+    openModal(elements.commandModal);
+    elements.commandInput.value = '';
+    setTimeout(() => elements.commandInput.focus(), 20);
+  }
+
+  function runCommand(id) {
+    const item = commandItems().find((command) => command.id === id);
+    closeModals();
+    item?.action();
+  }
+
+  function newPrompt() {
+    const title = window.prompt('Name this prompt');
+    if (!title?.trim()) return;
+    const instruction = window.prompt('What should PLUTO do?');
+    if (!instruction?.trim()) return;
+    state.prompts.unshift({ id: makeId('prompt'), title: title.trim(), description: instruction.trim().slice(0, 110), prompt: instruction.trim() });
+    saveState();
+    renderPromptLab();
+    showToast('Prompt saved to your lab');
+  }
+
+  function handleMessageAction(button) {
+    const messageNode = button.closest('.message');
+    const conversation = currentConversation();
+    const index = Number(messageNode?.dataset.messageIndex);
+    const message = conversation?.messages[index];
+    if (!message) return;
+    const action = button.dataset.messageAction;
+    if (action === 'copy') copyToClipboard(message.content).then(() => showToast('Copied to clipboard'));
+    if (action === 'speak') speak(message.content);
+    if (action === 'edit') { elements.composer.value = message.content; resizeComposer(); elements.composer.focus(); showToast('Message moved to composer'); }
+    if (action === 'regenerate') regenerate(index);
+  }
+
+  async function regenerate(index) {
+    const conversation = currentConversation();
+    if (!conversation || isGenerating || index < 1) return;
+    const previousUser = [...conversation.messages.slice(0, index)].reverse().find((message) => message.role === 'user');
+    if (!previousUser) return;
+    conversation.messages.splice(index);
+    renderMessages();
+    isGenerating = true; elements.send.disabled = true;
+    const typing = addTypingMessage();
+    try {
+      const answer = await callProvider(buildContext(conversation), previousUser.content, []);
+      typing.remove(); conversation.messages.push({ role: 'assistant', content: answer, timestamp: Date.now() }); saveState(); renderMessages();
+    } catch (error) { typing.remove(); showToast(error.message); }
+    finally { isGenerating = false; elements.send.disabled = false; }
+  }
+
+  function clearLocalData() {
+    if (!window.confirm('Clear conversations, files, prompts, and connection settings from this browser?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    state = structuredClone(defaultState);
+    attachedFiles = [];
+    closeModals();
+    applyState();
+    showToast('Local workspace cleared');
+  }
+
+  function applyState() {
+    const theme = state.settings.theme === 'system' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : state.settings.theme;
+    document.documentElement.dataset.theme = theme;
+    elements.shell.classList.toggle('compact', state.settings.compact);
+    elements.rail.style.display = state.settings.rail ? '' : 'none';
+    updateTopbar();
+    renderConversationList(); renderMessages(); renderAttachments(); renderLibrary(); renderPromptLab(); updateStorageMeter();
+  }
+
+  document.addEventListener('click', (event) => {
+    const actionElement = event.target.closest('[data-action]');
+    if (actionElement) {
+      const action = actionElement.dataset.action;
+      if (action === 'new-chat') createConversation();
+      if (action === 'toggle-sidebar') {
+        if (window.innerWidth < 701) elements.sidebar.classList.toggle('open');
+        else elements.shell.classList.toggle('sidebar-collapsed');
+      }
+      if (action === 'open-settings') openSettings();
+      if (action === 'close-modal') closeModals();
+      if (action === 'open-command') openCommand();
+      if (action === 'toggle-theme') setTheme(state.settings.theme === 'light' ? 'dark' : 'light');
+      if (action === 'attach') elements.fileInput.click();
+      if (action === 'send') sendMessage();
+      if (action === 'toggle-web') { state.settings.web = !state.settings.web; actionElement.classList.toggle('active', state.settings.web); $('#webStatus').textContent = state.settings.web ? 'ON' : 'OFF'; saveState(); showToast(state.settings.web ? 'Web access marked ON for connected providers' : 'Web access OFF'); }
+      if (action === 'toggle-thinking') { state.settings.thinking = !state.settings.thinking; actionElement.classList.toggle('active', state.settings.thinking); $('#thinkStatus').textContent = state.settings.thinking ? 'ON' : 'OFF'; saveState(); }
+      if (action === 'voice-input') startVoiceInput();
+      if (action === 'toggle-secret') { elements.apiKey.type = elements.apiKey.type === 'password' ? 'text' : 'password'; actionElement.textContent = elements.apiKey.type === 'password' ? 'Show' : 'Hide'; }
+      if (action === 'test-connection') { persistSettings(); showToast(state.settings.provider === 'demo' ? 'Demo is ready — no connection needed' : 'Settings saved. Send a message to test the provider.'); }
+      if (action === 'export-all') exportAllData();
+      if (action === 'clear-data') clearLocalData();
+      return;
+    }
+    const viewButton = event.target.closest('[data-view]');
+    if (viewButton) { setView(viewButton.dataset.view); return; }
+    const targetView = event.target.closest('[data-view-target]');
+    if (targetView) { setView(targetView.dataset.viewTarget); return; }
+    const promptCard = event.target.closest('[data-prompt]');
+    if (promptCard) { elements.composer.value = promptCard.dataset.prompt; resizeComposer(); elements.composer.focus(); return; }
+    const conversationButton = event.target.closest('[data-conversation-id]');
+    if (conversationButton) { selectConversation(conversationButton.dataset.conversationId); return; }
+    const messageButton = event.target.closest('[data-message-action]');
+    if (messageButton) { handleMessageAction(messageButton); return; }
+    const removeAttachment = event.target.closest('[data-remove-attachment]');
+    if (removeAttachment) { attachedFiles.splice(Number(removeAttachment.dataset.removeAttachment), 1); renderAttachments(); return; }
+    const settingsTab = event.target.closest('[data-settings-tab]');
+    if (settingsTab) { switchSettingsTab(settingsTab.dataset.settingsTab); return; }
+    const themeChoice = event.target.closest('[data-theme-choice]');
+    if (themeChoice) { setTheme(themeChoice.dataset.themeChoice); return; }
+    const command = event.target.closest('[data-command-id]');
+    if (command) { runCommand(command.dataset.commandId); return; }
+    const deletePrompt = event.target.closest('[data-delete-prompt]');
+    if (deletePrompt) { state.prompts = state.prompts.filter((prompt) => prompt.id !== deletePrompt.dataset.deletePrompt); saveState(); renderPromptLab(); return; }
+    const usePrompt = event.target.closest('[data-use-prompt]');
+    if (usePrompt) { const prompt = state.prompts.find((item) => item.id === usePrompt.dataset.usePrompt); if (prompt) { setView('chat'); elements.composer.value = prompt.prompt; resizeComposer(); elements.composer.focus(); } return; }
+    if (event.target.classList.contains('modal-backdrop')) closeModals();
+  });
+
+  elements.composer.addEventListener('input', resizeComposer);
+  elements.composer.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) { event.preventDefault(); sendMessage(); }
+  });
+  elements.search.addEventListener('input', () => { visibleChatCount = 8; renderConversationList(); });
+  $('#showMoreChats').addEventListener('click', () => { visibleChatCount += 8; renderConversationList(); });
+  elements.fileInput.addEventListener('change', (event) => { handleFiles(event.target.files); event.target.value = ''; });
+  ['dragenter', 'dragover'].forEach((type) => elements.composerShell.addEventListener(type, (event) => { event.preventDefault(); document.body.classList.add('drag-active'); }));
+  ['dragleave', 'drop'].forEach((type) => elements.composerShell.addEventListener(type, (event) => { event.preventDefault(); document.body.classList.remove('drag-active'); }));
+  elements.composerShell.addEventListener('drop', (event) => handleFiles(event.dataTransfer.files));
+  elements.provider.addEventListener('change', () => { state.settings.provider = elements.provider.value; state.settings.model = ''; updateProviderFields(); persistSettings(); });
+  elements.model.addEventListener('change', persistSettings);
+  elements.endpoint.addEventListener('change', persistSettings);
+  elements.apiKey.addEventListener('change', persistSettings);
+  elements.compact.addEventListener('change', persistSettings);
+  elements.railToggle.addEventListener('change', persistSettings);
+  elements.commandInput.addEventListener('input', () => { commandSelection = 0; renderCommands(elements.commandInput.value); });
+  elements.commandInput.addEventListener('keydown', (event) => {
+    const items = $$('.command-item', elements.commandList);
+    if (event.key === 'ArrowDown') { event.preventDefault(); commandSelection = Math.min(commandSelection + 1, items.length - 1); renderCommands(elements.commandInput.value); }
+    if (event.key === 'ArrowUp') { event.preventDefault(); commandSelection = Math.max(commandSelection - 1, 0); renderCommands(elements.commandInput.value); }
+    if (event.key === 'Enter' && items[commandSelection]) runCommand(items[commandSelection].dataset.commandId);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    const modifier = event.metaKey || event.ctrlKey;
+    if (modifier && event.key.toLowerCase() === 'k') { event.preventDefault(); openCommand(); }
+    if (modifier && event.key === '/') { event.preventDefault(); elements.search.focus(); }
+    if (event.key === 'Escape') closeModals();
+  });
+
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener?.('change', () => { if (state.settings.theme === 'system') setTheme('system'); });
+  applyState();
+})();
+
+</script>
+  </body>
+</html>
